@@ -92,12 +92,13 @@ def seg_process(args, image, background, net):
     bg = cv2.bitwise_and(bg, bg, mask=mask)
     fg = cv2.bitwise_and(image, image, mask=mask_inv)
     out1 = cv2.add(bg,fg)
+    cv2.imwrite("./result/out1.png", out1)
 
     # backround 제거된 image (with alpha channel)
-    b,g,r = cv2.split(fg)
+    b,g,r = cv2.split(image)
     rgba = [b,g,r,mask_inv]
     out2 = cv2.merge(rgba,4)
-    cv2.imwrite("test.png", out2)
+    cv2.imwrite("./result/out2.png", out2)
 
     
    # bg[:,:,0] = bg_gray
@@ -117,29 +118,24 @@ def seg_process(args, image, background, net):
     return out2
 
 
-def camera_seg(args, net):
+def test(args, net):
 
-    #videoCapture = cv2.VideoCapture(0)
-    # get a frame
-    #ret, frame = videoCapture.read()
-    frame = cv2.imread('./test7.jpg',cv2.IMREAD_COLOR)
+    frame = cv2.imread('./test2.jpg',cv2.IMREAD_COLOR)
     bg = cv2.imread('./bg.jpg',cv2.IMREAD_COLOR)
     frame = cv2.resize(frame, (400,600), interpolation=cv2.INTER_CUBIC)
     bg= cv2.resize(bg, (400,600), interpolation=cv2.INTER_CUBIC)
     #frame = cv2.flip(frame,1)
     frame_seg = seg_process(args, frame, bg, net)
-    #ret, mask = cv2.threshold(frame_seg, 200, 255, cv2.THRESH_BINARY)
-    #mattedImage = cv2.bitwise_and(frame,frame,mask=mask)
+    print(frame_seg.shape)
 
     # show a frame
-    cv2.imwrite('./result/mattedImage.jpg',frame_seg)
+    cv2.imwrite('./result/test_t.jpg',frame_seg)
 
-    #videoCapture.release()
 
 def main(args):
 
     myModel = load_model(args)
-    camera_seg(args, myModel)
+    test(args, myModel)
 
 
 if __name__ == "__main__":
